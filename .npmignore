@@ -1,2 +1,5 @@
+# Editor
+.editorconfig
+
 # Node
-node_modules
+node_modules/
