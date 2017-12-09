@@ -32,14 +32,22 @@ const AudioRecorder = require('node-audiorecorder');
 // Options is an optional parameter for the constructor call.
 // If an option is not given the default value, as seen below, will be used.
 const options = {
-  channels: '1',			// Amount of channels to record.
-  device: null,			// Recording device to use.
-  program: 'rec',			// Which program to use, either 'arecord', 'rec', or 'sox'.
-  sampleRate: 16000,		// Audio sample rate in hz.
-  silence: '2',			// Time of silence in seconds before it stops recording.
-  threshold: 0.5,			// Silence threshold (only for 'rec' and 'sox').
-  thresholdStart: null,	// Silence threshold to start recording, overrides threshold (only for 'rec' and 'sox').
-  thresholdEnd: null,		// Silence threshold to end recording, overrides threshold (only for 'rec' and 'sox').
+  // Amount of channels to record.
+  channels: '1',
+  // Recording device to use.
+  device: null,
+  // Which program to use, either 'arecord', 'rec', or 'sox'.
+  program: 'rec',
+  // Audio sample rate in hz.
+  sampleRate: 16000,
+  // Time of silence in seconds before it stops recording.
+  silence: '2',
+  // Silence threshold (only for 'rec' and 'sox').
+  threshold: 0.5,
+  // Silence threshold to start recording, overrides threshold (only for 'rec' and 'sox').
+  thresholdStart: null,
+  // Silence threshold to end recording, overrides threshold (only for 'rec' and 'sox').
+  thresholdEnd: null,
 };
 // Optional parameter intended for debugging.
 // The object has to implement a log and warn function.
