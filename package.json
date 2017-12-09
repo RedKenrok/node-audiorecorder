@@ -1,0 +1,16 @@
+{
+	"name": "node-audiorecorder",
+	"productName": "Audio recorder",
+	"version": "0.0.1",
+	"description": "Audio recorder for Node.js",
+	"keywords": [
+		"audio",
+		"recording"
+	],
+	"author": "Ron Dekker",
+	"repository": "https://github.com/RedKenrok/node-audiorecorder",
+	"license": "MIT",
+	"main": "index.js",
+	"dependencies": {},
+	"devDependencies": {}
+}
