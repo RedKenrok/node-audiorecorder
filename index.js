@@ -3,7 +3,7 @@
 const processSpawn = require('child_process').spawn;
 
 // Default recording values.
-const options = {
+const defaults = {
 	channels: '1',			// Amount of channels to record.
 	device: null,			// Recording device to use.
 	program: 'rec',			// Which program to use, either 'arecord', 'rec', or 'sox'.
