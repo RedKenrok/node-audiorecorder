@@ -90,4 +90,4 @@ let file = fs.createWriteStream('recording.wav', { encoding: 'binary' });
 audioRecorder.start().stream().pipe(file);
 ```
 
-> For another example see the [node-hotworddetector](https://github.com/RedKenrok/node-hotworddetector) module.
+> For another example see the [node-hotworddetector](https://github.com/RedKenrok/node-hotworddetector) module, or [Electron-VoiceInterfacePrototype](https://github.com/RedKenrok/Electron-VoiceInterfacePrototype).
