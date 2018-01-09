@@ -1,7 +1,7 @@
 {
 	"name": "node-audiorecorder",
 	"productName": "Audio recorder",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "Audio recorder for Node.js",
 	"keywords": [
 		"audio",

@@ -4,11 +4,11 @@ const processSpawn = require('child_process').spawn;
 
 // Default recording values.
 const defaults = {
-	channels: '1',			// Amount of channels to record.
+	channels: 1,			// Amount of channels to record.
 	device: null,			// Recording device to use.
 	program: 'rec',			// Which program to use, either 'arecord', 'rec', or 'sox'.
 	sampleRate: 16000,		// Audio sample rate in hz.
-	silence: '2',			// Time of silence in seconds before it stops recording.
+	silence: 2,				// Time of silence in seconds before it stops recording.
 	threshold: 0.5,			// Silence threshold (only for 'rec' and 'sox').
 	thresholdStart: null,	// Silence threshold to start recording, overrides threshold (only for 'rec' and 'sox').
 	thresholdEnd: null,		// Silence threshold to end recording, overrides threshold (only for 'rec' and 'sox').
@@ -33,9 +33,9 @@ class AudioRecorder {
 				// Show no progress
 				'-q',
 				// Sample rate
-				'-r', this.options.sampleRate,
+				'-r', this.options.sampleRate.toString(),
 				// Channels
-				'-c', this.options.channels
+				'-c', this.options.channels.toString()
 			],
 			options: {
 				encoding: 'binary'
@@ -55,8 +55,8 @@ class AudioRecorder {
 					// Pipe
 					'-',
 					// End on silence
-					'silence','1', '0.1', (this.options.thresholdStart || this.options.threshold) + '%',
-					'1', this.options.silence, (this.options.thresholdEnd || this.options.threshold) + '%'
+					'silence','1', '0.1', (this.options.thresholdStart || this.options.threshold).toString() + '%',
+					'1', this.options.silence.toString(), (this.options.thresholdEnd || this.options.threshold).toString() + '%'
 				);
 				break;
 			case 'arecord':
