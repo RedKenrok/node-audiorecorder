@@ -41,7 +41,7 @@ const options = {
   // Audio sample rate in hz.
   sampleRate: 16000,
   // Time of silence in seconds before it stops recording.
-  silence: '2',
+  silence: 2,
   // Silence threshold (only for 'rec' and 'sox').
   threshold: 0.5,
   // Silence threshold to start recording, overrides threshold (only for 'rec' and 'sox').
