@@ -33,20 +33,20 @@ const AudioRecorder = require('node-audiorecorder');
 // If an option is not given the default value, as seen below, will be used.
 const options = {
   // Amount of channels to record.
-  channels: '1',
+  channels: 1,
   // Recording device to use.
   device: null,
-  // Which program to use, either 'arecord', 'rec', or 'sox'.
-  program: 'sox',
+  // Which program to use, either 'arecord', 'rec'.
+  program: 'rec',
   // Audio sample rate in hz.
   sampleRate: 16000,
   // Time of silence in seconds before it stops recording.
   silence: 2,
-  // Silence threshold (only for 'rec' and 'sox').
+  // Silence threshold (only for 'rec').
   threshold: 0.5,
-  // Silence threshold to start recording, overrides threshold (only for 'rec' and 'sox').
+  // Silence threshold to start recording, overrides threshold (only for 'rec').
   thresholdStart: null,
-  // Silence threshold to end recording, overrides threshold (only for 'rec' and 'sox').
+  // Silence threshold to end recording, overrides threshold (only for 'rec').
   thresholdEnd: null,
 };
 // Optional parameter intended for debugging.

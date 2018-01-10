@@ -6,12 +6,12 @@ const processSpawn = require('child_process').spawn;
 const defaults = {
 	channels: 1,			// Amount of channels to record.
 	device: null,			// Recording device to use.
-	program: 'sox',			// Which program to use, either 'arecord', 'rec', or 'sox'.
+	program: 'rec',			// Which program to use, either 'arecord', 'rec'.
 	sampleRate: 16000,		// Audio sample rate in hz.
 	silence: 2,				// Time of silence in seconds before it stops recording.
-	threshold: 0.5,			// Silence threshold (only for 'rec' and 'sox').
-	thresholdStart: null,	// Silence threshold to start recording, overrides threshold (only for 'rec' and 'sox').
-	thresholdEnd: null,		// Silence threshold to end recording, overrides threshold (only for 'rec' and 'sox').
+	threshold: 0.5,			// Silence threshold (only for 'rec').
+	thresholdStart: null,	// Silence threshold to start recording, overrides threshold (only for 'rec').
+	thresholdEnd: null,		// Silence threshold to end recording, overrides threshold (only for 'rec').
 };
 
 let process,
@@ -43,7 +43,6 @@ class AudioRecorder {
 		};
 		switch (this.options.program) {
 			default:
-			case 'sox':
 			case 'rec':
 				this.command.arguments.push(
 					// Sample encoding
