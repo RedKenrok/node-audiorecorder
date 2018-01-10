@@ -6,7 +6,7 @@ const processSpawn = require('child_process').spawn;
 const defaults = {
 	channels: 1,			// Amount of channels to record.
 	device: null,			// Recording device to use.
-	program: 'rec',			// Which program to use, either 'arecord', 'rec', or 'sox'.
+	program: 'sox',			// Which program to use, either 'arecord', 'rec', or 'sox'.
 	sampleRate: 16000,		// Audio sample rate in hz.
 	silence: 2,				// Time of silence in seconds before it stops recording.
 	threshold: 0.5,			// Silence threshold (only for 'rec' and 'sox').
@@ -169,6 +169,7 @@ class AudioRecorder {
 	}
 	/**
 	 * Returns the stream of the audio recording process.
+	 * @returns process stdout stream
 	 */
 	stream() {
 		if (!stream) {

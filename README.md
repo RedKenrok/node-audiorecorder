@@ -37,7 +37,7 @@ const options = {
   // Recording device to use.
   device: null,
   // Which program to use, either 'arecord', 'rec', or 'sox'.
-  program: 'rec',
+  program: 'sox',
   // Audio sample rate in hz.
   sampleRate: 16000,
   // Time of silence in seconds before it stops recording.
