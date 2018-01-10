@@ -6,13 +6,16 @@ const processSpawn = require('child_process').spawn;
 const defaults = {
 	channels: 1,			// Amount of channels to record.
 	device: null,			// Recording device to use.
-	program: 'rec',			// Which program to use, either 'arecord', 'rec'.
+	program: 'rec',			// Which program to use, either 'arecord' and 'rec'.
 	sampleRate: 16000,		// Audio sample rate in hz.
 	silence: 2,				// Time of silence in seconds before it stops recording.
 	threshold: 0.5,			// Silence threshold (only for 'rec').
 	thresholdStart: null,	// Silence threshold to start recording, overrides threshold (only for 'rec').
 	thresholdEnd: null,		// Silence threshold to end recording, overrides threshold (only for 'rec').
 };
+
+let process,
+	stream;
 
 class AudioRecorder {
 	/**
@@ -84,15 +87,15 @@ class AudioRecorder {
 	 * @returns this
 	 */
 	start() {
-		if (this.process) {
+		if (process) {
 			if (this.logger) {
 				this.logger.warn('AudioRecorder: Process already active, killed old one started new process.');
 			}
-			this.process.kill();
+			process.kill();
 		}
 		
 		// Create new child process and give the recording commands.
-		this.process = processSpawn(this.options.program, this.command.arguments, this.command.options);
+		process = processSpawn(this.options.program, this.command.arguments, this.command.options);
 		
 		if (this.logger) {
 			this.logger.log('AudioRecorder: Started recording.');
@@ -105,15 +108,15 @@ class AudioRecorder {
 	 * @returns this
 	 */
 	stop() {
-		if (!this.process) {
+		if (!process) {
 			if (this.logger) {
 				this.logger.warn('AudioRecorder: Unable to stop recording, no process active.');
 			}
 			return this;
 		}
 		
-		this.process.kill();
-		this.process = null;
+		process.kill();
+		process = null;
 		
 		if (this.logger) {
 			this.logger.log('AudioRecorder: Stopped recording.');
@@ -126,15 +129,15 @@ class AudioRecorder {
 	 * @returns this
 	 */
 	pause() {
-		if (!this.process) {
+		if (!process) {
 			if (this.logger) {
 				this.logger.warn('AudioRecorder: Unable to pause recording, no process active.');
 			}
 			return this;
 		}
 		
-		this.process.kill('SIGSTOP');
-		this.process.stdout.pause();
+		process.kill('SIGSTOP');
+		process.stdout.pause();
 		
 		if (this.logger) {
 			this.logger.log('AudioRecorder: Paused recording.');
@@ -147,15 +150,15 @@ class AudioRecorder {
 	 * @returns this
 	 */
 	resume() {
-		if (!this.process) {
+		if (!process) {
 			if (this.logger) {
 				this.logger.warn('AudioRecorder: Unable to resumed recording, started recording automaticly.');
 			}
 			return this.start();
 		}
 		
-		this.process.kill('SIGCONT');
-		this.process.stdout.resume();
+		process.kill('SIGCONT');
+		process.stdout.resume();
 		
 		if (this.logger) {
 			this.logger.log('AudioRecorder: Resumed recording.');
@@ -165,17 +168,20 @@ class AudioRecorder {
 	}
 	/**
 	 * Returns the stream of the audio recording process.
-	 * @returns process stdout stream
 	 */
 	stream() {
-		if (!this.process) {
-			if (this.logger) {
-				this.logger.warn('AudioRecorder: Unable to retrieve stream, because no process not active. Call the start or resume function first.');
+		if (!stream) {
+			if (!process) {
+				if (this.logger) {
+					this.logger.warn('AudioRecorder: Unable to retrieve stream, because no process not active. Call the start or resume function first.');
+				}
+				return null;
 			}
-			return null;
+			
+			stream = process.stdout;
 		}
 		
-		return this.process.stdout;
+		return stream;
 	}
 }
 
