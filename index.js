@@ -14,41 +14,34 @@ const defaults = {
 	thresholdEnd: null,		// Silence threshold to end recording, overrides threshold (only for 'rec').
 };
 
-// Local variables.
-let options,
-	logger,
-	command,
-	process,
-	stream;
-
 class AudioRecorder {
 	/**
 	 * Constructor of AudioRecord class.
-	 * @param {*} _options Object with optional options variables
-	 * @param {*} _logger Object with log, warn, and error functions
+	 * @param {*} options Object with optional options variables
+	 * @param {*} logger Object with log, warn, and error functions
 	 * @returns this
 	 */
-	constructor(_options, _logger) {
-		options = Object.assign(defaults, _options);
-		logger = _logger;
+	constructor(options, logger) {
+		this.options = Object.assign(defaults, options);
+		this.logger = logger;
 		
-		command = {
+		this.command = {
 			arguments: [
 				// Show no progress
 				'-q',
 				// Sample rate
-				'-r', options.sampleRate.toString(),
+				'-r', this.options.sampleRate.toString(),
 				// Channels
-				'-c', options.channels.toString()
+				'-c', this.options.channels.toString()
 			],
 			options: {
 				encoding: 'binary'
 			}
 		};
-		switch (options.program) {
+		switch (this.options.program) {
 			default:
 			case 'rec':
-				command.arguments.push(
+				this.command.arguments.push(
 					// Sample encoding
 					'-e', 'signed-integer',
 					// Precision in bits
@@ -58,12 +51,12 @@ class AudioRecorder {
 					// Pipe
 					'-',
 					// End on silence
-					'silence','1', '0.1', (options.thresholdStart || options.threshold).toString() + '%',
-					'1', options.silence.toString(), (options.thresholdEnd || options.threshold).toString() + '%'
+					'silence','1', '0.1', (this.options.thresholdStart || this.options.threshold).toString() + '%',
+					'1', this.options.silence.toString(), (this.options.thresholdEnd || this.options.threshold).toString() + '%'
 				);
 				break;
 			case 'arecord':
-				command.arguments.push(
+				this.command.arguments.push(
 					// Audio type
 					'-t', 'wav',
 					// Sample format
@@ -71,17 +64,17 @@ class AudioRecorder {
 					// Pipe
 					'-'
 				);
-				if (options.device) {
-					command.arguments.push('-D', options.device)
+				if (this.options.device) {
+					this.command.arguments.push('-D', this.options.device)
 				}
 				break;
 		}
-		if (options.device) {
-			command.options.env = Object.assign({}, process.env, {  AUDIODEV: options.device });
+		if (this.options.device) {
+			this.command.options.env = Object.assign({}, {  AUDIODEV: this.options.device });
 		}
 		
-		if (logger) {
-			logger.log('AudioRecorder command: ' + options.program + ' ' + command.arguments.join(' '));
+		if (this.logger) {
+			this.logger.log('AudioRecorder command: ' + this.options.program + ' ' + this.command.arguments.join(' '));
 		}
 		
 		return this;
@@ -91,18 +84,18 @@ class AudioRecorder {
 	 * @returns this
 	 */
 	start() {
-		if (process) {
-			if (logger) {
-				logger.warn('AudioRecorder: Process already active, killed old one started new process.');
+		if (this.process) {
+			if (this.logger) {
+				this.logger.warn('AudioRecorder: Process already active, killed old one started new process.');
 			}
-			process.kill();
+			this.process.kill();
 		}
 		
 		// Create new child process and give the recording commands.
-		process = processSpawn(options.program, command.arguments, command.options);
+		this.process = processSpawn(this.options.program, this.command.arguments, this.command.options);
 		
-		if (logger) {
-			logger.log('AudioRecorder: Started recording.');
+		if (this.logger) {
+			this.logger.log('AudioRecorder: Started recording.');
 		}
 		
 		return this;
@@ -112,18 +105,18 @@ class AudioRecorder {
 	 * @returns this
 	 */
 	stop() {
-		if (!process) {
-			if (logger) {
-				logger.warn('AudioRecorder: Unable to stop recording, no process active.');
+		if (!this.process) {
+			if (this.logger) {
+				this.logger.warn('AudioRecorder: Unable to stop recording, no process active.');
 			}
 			return this;
 		}
 		
-		process.kill();
-		process = null;
+		this.process.kill();
+		this.process = null;
 		
-		if (logger) {
-			logger.log('AudioRecorder: Stopped recording.');
+		if (this.logger) {
+			this.logger.log('AudioRecorder: Stopped recording.');
 		}
 		
 		return this;
@@ -133,18 +126,18 @@ class AudioRecorder {
 	 * @returns this
 	 */
 	pause() {
-		if (!process) {
-			if (logger) {
-				logger.warn('AudioRecorder: Unable to pause recording, no process active.');
+		if (!this.process) {
+			if (this.logger) {
+				this.logger.warn('AudioRecorder: Unable to pause recording, no process active.');
 			}
 			return this;
 		}
 		
-		process.kill('SIGSTOP');
-		process.stdout.pause();
+		this.process.kill('SIGSTOP');
+		this.process.stdout.pause();
 		
-		if (logger) {
-			logger.log('AudioRecorder: Paused recording.');
+		if (this.logger) {
+			this.logger.log('AudioRecorder: Paused recording.');
 		}
 		
 		return this;
@@ -154,18 +147,18 @@ class AudioRecorder {
 	 * @returns this
 	 */
 	resume() {
-		if (!process) {
-			if (logger) {
-				logger.warn('AudioRecorder: Unable to resumed recording, started recording automaticly.');
+		if (!this.process) {
+			if (this.logger) {
+				this.logger.warn('AudioRecorder: Unable to resumed recording, started recording automaticly.');
 			}
 			return this.start();
 		}
 		
-		process.kill('SIGCONT');
-		process.stdout.resume();
+		this.process.kill('SIGCONT');
+		this.process.stdout.resume();
 		
-		if (logger) {
-			logger.log('AudioRecorder: Resumed recording.');
+		if (this.logger) {
+			this.logger.log('AudioRecorder: Resumed recording.');
 		}
 		
 		return this;
@@ -175,18 +168,14 @@ class AudioRecorder {
 	 * @returns process stdout stream
 	 */
 	stream() {
-		if (!stream) {
-			if (!process) {
-				if (logger) {
-					logger.warn('AudioRecorder: Unable to retrieve stream, because no process not active. Call the start or resume function first.');
-				}
-				return null;
+		if (!this.process) {
+			if (this.logger) {
+				this.logger.warn('AudioRecorder: Unable to retrieve stream, because no process not active. Call the start or resume function first.');
 			}
-			
-			stream = process.stdout;
+			return null;
 		}
 		
-		return stream;
+		return this.process.stdout;
 	}
 }
 
