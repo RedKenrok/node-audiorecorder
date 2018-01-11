@@ -1,23 +1,26 @@
 'use strict';
 
-const processSpawn = require('child_process').spawn;
+const EventEmitter = require('events').EventEmitter,
+	  os = require('os'),
+	  processSpawn = require('child_process').spawn;
+
 
 // Default recording values.
 const defaults = {
 	channels: 1,			// Amount of channels to record.
 	device: null,			// Recording device to use.
-	program: 'rec',			// Which program to use, either 'arecord' and 'rec'.
+	program: 'sox',			// Which program to use, either 'arecord', 'sox' and 'rec'.
 	sampleRate: 16000,		// Audio sample rate in hz.
 	silence: 2,				// Time of silence in seconds before it stops recording.
-	threshold: 0.5,			// Silence threshold (only for 'rec').
-	thresholdStart: null,	// Silence threshold to start recording, overrides threshold (only for 'rec').
-	thresholdEnd: null,		// Silence threshold to end recording, overrides threshold (only for 'rec').
+	threshold: 0.5,			// Silence threshold (only for 'sox' and 'rec').
+	thresholdStart: null,	// Silence threshold to start recording, overrides threshold (only for 'sox' and 'rec').
+	thresholdStop: null,	// Silence threshold to stop recording, overrides threshold (only for 'sox' and 'rec').
 };
 
 let process,
 	stream;
 
-class AudioRecorder {
+class AudioRecorder extends EventEmitter {
 	/**
 	 * Constructor of AudioRecord class.
 	 * @param {*} options Object with optional options variables
@@ -25,6 +28,8 @@ class AudioRecorder {
 	 * @returns this
 	 */
 	constructor(options, logger) {
+		super();
+		
 		this.options = Object.assign(defaults, options);
 		this.logger = logger;
 		
@@ -43,7 +48,18 @@ class AudioRecorder {
 		};
 		switch (this.options.program) {
 			default:
+			case 'sox':
+				if (!this.options.device && [ 'win32' ].indexOf(os.platform()) > -1) {
+					console.log('unshift');
+					this.command.arguments.unshift(
+						// Continues recording
+						'-d',
+					);
+				}
 			case 'rec':
+				if (this.options.device) {
+					this.command.arguments.push('-d', this.options.device);
+				}
 				this.command.arguments.push(
 					// Sample encoding
 					'-e', 'signed-integer',
@@ -55,7 +71,7 @@ class AudioRecorder {
 					'-',
 					// End on silence
 					'silence','1', '0.1', (this.options.thresholdStart || this.options.threshold).toString() + '%',
-					'1', this.options.silence.toString(), (this.options.thresholdEnd || this.options.threshold).toString() + '%'
+					'1', this.options.silence.toString(), (this.options.thresholdStop || this.options.threshold).toString() + '%'
 				);
 				break;
 			case 'arecord':
@@ -71,9 +87,6 @@ class AudioRecorder {
 					this.command.arguments.push('-D', this.options.device)
 				}
 				break;
-		}
-		if (this.options.device) {
-			this.command.options.env = Object.assign({}, {  AUDIODEV: this.options.device });
 		}
 		
 		if (this.logger) {
@@ -96,6 +109,15 @@ class AudioRecorder {
 		
 		// Create new child process and give the recording commands.
 		process = processSpawn(this.options.program, this.command.arguments, this.command.options);
+		
+		// Store this in 'self' so it can be accessed in the callback.
+		let self = this;
+		process.on('close', function(exitCode) {
+			if (self.logger) {
+				self.logger.log('AudioRecorder: Exit code: ' + exitCode);
+			}
+			self.emit('close', exitCode);
+		});
 		
 		if (this.logger) {
 			this.logger.log('AudioRecorder: Started recording.');
@@ -120,48 +142,6 @@ class AudioRecorder {
 		
 		if (this.logger) {
 			this.logger.log('AudioRecorder: Stopped recording.');
-		}
-		
-		return this;
-	}
-	/**
-	 * Stops the audio recording process and pauses the stream.
-	 * @returns this
-	 */
-	pause() {
-		if (!process) {
-			if (this.logger) {
-				this.logger.warn('AudioRecorder: Unable to pause recording, no process active.');
-			}
-			return this;
-		}
-		
-		process.kill('SIGSTOP');
-		process.stdout.pause();
-		
-		if (this.logger) {
-			this.logger.log('AudioRecorder: Paused recording.');
-		}
-		
-		return this;
-	}
-	/**
-	 * Starts the audio recording process and resumes the stream.
-	 * @returns this
-	 */
-	resume() {
-		if (!process) {
-			if (this.logger) {
-				this.logger.warn('AudioRecorder: Unable to resumed recording, started recording automaticly.');
-			}
-			return this.start();
-		}
-		
-		process.kill('SIGCONT');
-		process.stdout.resume();
-		
-		if (this.logger) {
-			this.logger.log('AudioRecorder: Resumed recording.');
 		}
 		
 		return this;
