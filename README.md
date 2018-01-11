@@ -88,4 +88,4 @@ audioRecorder.start().stream().pipe(file);
 ## Troubleshooting
 
 ### Windows continues recording
-If you have issues with continues recording on Windows 10 with SoX 14.4.2 or later install version [14.4.1rc3](https://sourceforge.net/projects/sox/files/release_candidates/sox/14.4.1rc3/) instead.
+If you have issues with continues recording on Windows 10 with SoX 14.4.2 or later, install version [14.4.1rc3](https://sourceforge.net/projects/sox/files/release_candidates/sox/14.4.1rc3/) instead.
