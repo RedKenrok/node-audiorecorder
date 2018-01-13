@@ -83,7 +83,7 @@ let file = fs.createWriteStream('recording.wav', { encoding: 'binary' });
 audioRecorder.start().stream().pipe(file);
 ```
 
-> For another example see the [node-hotworddetector](https://github.com/RedKenrok/node-hotworddetector) module, or [Electron-VoiceInterfacePrototype](https://github.com/RedKenrok/Electron-VoiceInterfacePrototype)'s input.js.
+> For another example see the [node-hotworddetector](https://github.com/RedKenrok/node-hotworddetector) module, or [Electron-VoiceInterfaceBoilerplate](https://github.com/RedKenrok/Electron-VoiceInterfaceBoilerplate)'s input.js.
 
 ## Troubleshooting
 
