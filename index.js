@@ -1,15 +1,13 @@
 'use strict';
 
-const EventEmitter = require('events').EventEmitter,
-	  os = require('os'),
-	  processSpawn = require('child_process').spawn;
-
+// Import node modules.
+const processSpawn = require('child_process').spawn;
 
 // Default recording values.
 const defaults = {
 	channels: 1,			// Amount of channels to record.
 	device: null,			// Recording device to use.
-	program: 'sox',			// Which program to use, either 'arecord', 'sox' and 'rec'.
+	program: 'rec',			// Which program to use, either 'arecord', 'sox' and 'rec'.
 	sampleRate: 16000,		// Audio sample rate in hz.
 	silence: 2,				// Time of silence in seconds before it stops recording.
 	threshold: 0.5,			// Silence threshold (only for 'sox' and 'rec').
@@ -17,10 +15,10 @@ const defaults = {
 	thresholdStop: null,	// Silence threshold to stop recording, overrides threshold (only for 'sox' and 'rec').
 };
 
-let process,
-	stream;
+// Local private variables.
+let process;
 
-class AudioRecorder extends EventEmitter {
+class AudioRecorder extends require('events').EventEmitter {
 	/**
 	 * Constructor of AudioRecord class.
 	 * @param {*} options Object with optional options variables
@@ -35,8 +33,16 @@ class AudioRecorder extends EventEmitter {
 		
 		this.command = {
 			arguments: [
+				// Show no error messages
+					// Use the 'close' event to listen for an exit code.
+				'-V0',
 				// Show no progress
 				'-q',
+				// Endian
+					// -L = little
+					// -B = big
+					// -X = swap
+				'-L',
 				// Sample rate
 				'-r', this.options.sampleRate.toString(),
 				// Channels
@@ -49,7 +55,7 @@ class AudioRecorder extends EventEmitter {
 		switch (this.options.program) {
 			default:
 			case 'sox':
-				if (!this.options.device && [ 'win32' ].indexOf(os.platform()) > -1) {
+				if (!this.options.device && [ 'win32' ].indexOf(require('os').platform()) > -1) {
 					console.log('unshift');
 					this.command.arguments.unshift(
 						// Continues recording
@@ -150,18 +156,14 @@ class AudioRecorder extends EventEmitter {
 	 * Returns the stream of the audio recording process.
 	 */
 	stream() {
-		if (!stream) {
-			if (!process) {
-				if (this.logger) {
-					this.logger.warn('AudioRecorder: Unable to retrieve stream, because no process not active. Call the start or resume function first.');
-				}
-				return null;
+		if (!process) {
+			if (this.logger) {
+				this.logger.warn('AudioRecorder: Unable to retrieve stream, because no process not active. Call the start or resume function first.');
 			}
-			
-			stream = process.stdout;
+			return null;
 		}
 		
-		return stream;
+		return process.stdout;
 	}
 }
 
