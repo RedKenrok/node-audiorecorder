@@ -56,7 +56,6 @@ class AudioRecorder extends require('events').EventEmitter {
 			default:
 			case 'sox':
 				if (!this.options.device && [ 'win32' ].indexOf(require('os').platform()) > -1) {
-					console.log('unshift');
 					this.command.arguments.unshift(
 						// Continues recording
 						'-d',
