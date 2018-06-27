@@ -70,18 +70,7 @@ audioRecorder.Stream();
 ```
 
 ### Example
-```javascript
-// Imports modules.
-const fs = require('fs');
-const AudioRecorder = require('node-audiorecorder');
-
-// Initialize recorder and file stream.
-let audioRecorder = new AudioRecorder(null, console);
-let file = fs.createWriteStream('recording.wav', { encoding: 'binary' });
-
-// Start and write to the file.
-audioRecorder.start().stream().pipe(file);
-```
+See or run the [example.js](https://github.com/RedKenrok/node-audiorecorder/blob/master/example.js) script to see or test it for yourself. If you want to use that code directly in your project DO update the ``require(./index.js)`` to ``require(node-audiorecorder)``.
 
 > For another example see the [node-hotworddetector](https://github.com/RedKenrok/node-hotworddetector) module, or [Electron-VoiceInterfaceBoilerplate](https://github.com/RedKenrok/Electron-VoiceInterfaceBoilerplate)'s input.js.
 

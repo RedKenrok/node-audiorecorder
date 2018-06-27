@@ -73,11 +73,15 @@ class AudioRecorder extends require('events').EventEmitter {
 					// Audio type
 					'-t', 'wav',
 					// Pipe
-					'-',
-					// End on silence
-					'silence','1', '0.1', (this.options.thresholdStart || this.options.threshold).toString() + '%',
-					'1', this.options.silence.toString(), (this.options.thresholdStop || this.options.threshold).toString() + '%'
+					'-'
 				);
+				if (this.options.silence > 0) {
+					// End on silence
+					this.command.arguments.push(
+						'silence','1', '0.1', (this.options.thresholdStart || this.options.threshold).toString() + '%',
+						'1', this.options.silence.toString(), (this.options.thresholdStop || this.options.threshold).toString() + '%'
+					);
+				}
 				break;
 			case 'arecord':
 				this.command.arguments.push(
