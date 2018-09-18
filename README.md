@@ -70,7 +70,7 @@ audioRecorder.Stream();
 ```
 
 ### Example
-See or run the [example.js](https://github.com/RedKenrok/node-audiorecorder/blob/master/example.js) script to see or test it for yourself. If you want to use that code directly in your project DO update the ``require(./index.js)`` to ``require(node-audiorecorder)``.
+See or run the [example.js](https://github.com/RedKenrok/node-audiorecorder/blob/master/example/example.js) script to see or test it for yourself. If you want to use that code directly in your project DO update the ``require(./index.js)`` to ``require(node-audiorecorder)``.
 
 > For another example see the [node-hotworddetector](https://github.com/RedKenrok/node-hotworddetector) module, or [Electron-VoiceInterfaceBoilerplate](https://github.com/RedKenrok/Electron-VoiceInterfaceBoilerplate)'s input.js.
 
