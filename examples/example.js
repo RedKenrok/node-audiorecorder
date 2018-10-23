@@ -1,27 +1,26 @@
 // Imports modules.
 const fs = require(`fs`),
-	os = require(`os`),
 	path = require(`path`);
-const AudioRecorder = require(`./index.js`);
+const AudioRecorder = require(`../library`);
 // Constants.
-const directoryName = `ExampleRecordings`;
+const DIRECTORY = `EXAMPLE-RECORDINGS`;
 
 // Initialize recorder and file stream.
-let audioRecorder = new AudioRecorder({
-	program: [ `win32` ].indexOf(os.platform() > -1) ? `sox` : `rec`,
+const audioRecorder = new AudioRecorder({
+	program: process.platform === `win32` ? `sox` : `rec`,
 	silence: 0
 }, console);
 
 // Create path to write recordings to.
-if (!fs.existsSync(directoryName)){
-	fs.mkdirSync(directoryName);
+if (!fs.existsSync(DIRECTORY)){
+	fs.mkdirSync(DIRECTORY);
 }
-// Create filepath with random name.
-let fileName = path.join(directoryName, Math.random().toString(36).replace(/[^a-z]+/g, ``).substr(0, 4).concat(`.wav`));
+// Create file path with random name.
+const fileName = path.join(DIRECTORY, Math.random().toString(36).replace(/[^a-z]+/g, ``).substr(0, 4).concat(`.wav`));
 console.log(`Writing new recording file at: `, fileName);
 
 // Create write stream.
-let fileStream = fs.createWriteStream(fileName, { encoding: `binary` });
+const fileStream = fs.createWriteStream(fileName, { encoding: `binary` });
 // Start and write to the file.
 audioRecorder.start().stream().pipe(fileStream);
 

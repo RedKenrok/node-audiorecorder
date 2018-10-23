@@ -1,5 +1,6 @@
 # Node
-node_modules
-
+node_modules/
+# Coverage
+.nyc_output/
 # Examples
-/ExampleRecordings
+examples/EXAMPLE-RECORDINGS/
