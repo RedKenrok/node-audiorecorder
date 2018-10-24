@@ -3,4 +3,4 @@ node_modules/
 # Coverage
 .nyc_output/
 # Examples
-examples/EXAMPLE-RECORDINGS/
+examples-recordings/

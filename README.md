@@ -42,22 +42,20 @@ const AudioRecorder = require('node-audiorecorder');
 // Options is an optional parameter for the constructor call.
 // If an option is not given the default value, as seen below, will be used.
 const options = {
-  // Amount of channels to record.
-  channels: 1,
-  // Recording device to use.
-  device: null,
-  // Which program to use, either 'arecord', 'sox', and 'rec'.
-  program: 'rec',
-  // Audio sample rate in hz.
-  sampleRate: 16000,
-  // Time of silence in seconds before it stops recording.
-  silence: 2,
-  // Silence threshold (only for 'sox' and 'rec').
-  threshold: 0.5,
-  // Silence threshold to start recording, overrides threshold (only for 'sox' and 'rec').
-  thresholdStart: null,
-  // Silence threshold to stop recording, overrides threshold (only for 'sox' and 'rec').
-  thresholdStop: null,
+	program: `rec`,			// Which program to use, either `arecord`, `rec`, and `sox`.
+	device: null,			// Recording device to use.
+	
+	channels: 1,			// Channel count.
+	bits: 16,				// Sample size. (only for `rec` and `sox`)
+	encoding: `signed-integer`,	// Encoding type. (only for `rec` and `sox`)
+	rate: 16000,			// Sample rate.
+	type: `wav`,			// File type.
+	
+	// Following options only for `rec` and `sox` programs
+	silence: 2,				// Time of silence in seconds before it stops recording.
+	threshold: 0.5,			// Silence threshold.
+	thresholdStart: null,	// Silence threshold to start recording, overrides threshold.
+	thresholdStop: null,	// Silence threshold to stop recording, overrides threshold.
 };
 // Optional parameter intended for debugging.
 // The object has to implement a log and warn function.
@@ -81,25 +79,7 @@ audioRecorder.Stream();
 
 ### Examples
 
-The following is a shortend version of the [example script](https://github.com/RedKenrok/node-audiorecorder/blob/master/example/example.js) found in this repository.  Do note `../library` references this module.
-
-```JavaScript
-// Imports modules.
-const fs = require(`fs`),
-	path = require(`path`);
-const AudioRecorder = require(`../library`);
-// Constants.
-const DIRECTORY = `RECORDINGS`;
-
-// Initialize recorder and file stream.
-const audioRecorder = new AudioRecorder({
-	program: process.platform === `win32` ? `sox` : `rec`,
-	silence: 0
-});
-
-// Log the generated command.
-console.log(`${audioRecorder.options.program} ${audioRecorder.command.arguments.join(` `)}`);
-```
+See the [examples directory](https://github.com/RedKenrok/node-audiorecorder/tree/master/examples) for example usage.
 
 > For another example see the [node-hotworddetector](https://github.com/RedKenrok/node-hotworddetector) module, or [Electron-VoiceInterfaceBoilerplate](https://github.com/RedKenrok/Electron-VoiceInterfaceBoilerplate)'s input.js.
 
@@ -110,4 +90,4 @@ If you have issues with continues recording on Windows 10 with SoX 14.4.2 or lat
 
 ## License
 
-[ISC license](https://github.com/redkenrok/node-audiorecorder/blob/master/LICENSE)
+[MIT license](https://github.com/redkenrok/node-audiorecorder/blob/master/LICENSE)

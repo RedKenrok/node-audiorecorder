@@ -3,7 +3,7 @@ const fs = require(`fs`),
 	path = require(`path`);
 const AudioRecorder = require(`../library`);
 // Constants.
-const DIRECTORY = `EXAMPLE-RECORDINGS`;
+const DIRECTORY = `examples-recordings`;
 
 // Initialize recorder and file stream.
 const audioRecorder = new AudioRecorder({

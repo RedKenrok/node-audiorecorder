@@ -3,14 +3,20 @@ const processSpawn = require(`child_process`).spawn;
 
 // Default recording values.
 const defaults = {
-	channels: 1,			// Amount of channels to record.
+	program: `rec`,			// Which program to use, either `arecord`, `rec`, and `sox`.
 	device: null,			// Recording device to use.
-	program: `rec`,			// Which program to use, either 'arecord', 'sox' and 'rec'.
-	sampleRate: 16000,		// Audio sample rate in hz.
+	
+	channels: 1,			// Channel count.
+	bits: 16,				// Sample size. (only for `rec` and `sox`)
+	encoding: `signed-integer`,	// Encoding type. (only for `rec` and `sox`)
+	rate: 16000,			// Sample rate.
+	type: `wav`,			// File type.
+	
+	// Following options only for `rec` and `sox` programs
 	silence: 2,				// Time of silence in seconds before it stops recording.
-	threshold: 0.5,			// Silence threshold (only for 'sox' and 'rec').
-	thresholdStart: null,	// Silence threshold to start recording, overrides threshold (only for 'sox' and 'rec').
-	thresholdStop: null,	// Silence threshold to stop recording, overrides threshold (only for 'sox' and 'rec').
+	threshold: 0.5,			// Silence threshold.
+	thresholdStart: null,	// Silence threshold to start recording, overrides threshold.
+	thresholdStop: null,	// Silence threshold to stop recording, overrides threshold.
 };
 
 // Local private variables.
@@ -23,8 +29,14 @@ class AudioRecorder extends require(`events`).EventEmitter {
 	 * @param {*} logger Object with log, warn, and error functions
 	 * @returns this
 	 */
-	constructor(options, logger) {
+	constructor(options = {}, logger) {
 		super();
+		
+		// Legacy support for sample rate property.
+		if (options.sampleRate) {
+			options.rate = options.sampleRate;
+			options.sampleRate = undefined;
+		}
 		
 		this.options = Object.assign(defaults, options);
 		this.logger = logger;
@@ -32,7 +44,7 @@ class AudioRecorder extends require(`events`).EventEmitter {
 		this.command = {
 			arguments: [
 				// Show no error messages
-				//   Use the 'close' event to listen for an exit code.
+				//   Use the `close` event to listen for an exit code.
 				`-V0`,
 				// Show no progress
 				`-q`,
@@ -41,10 +53,12 @@ class AudioRecorder extends require(`events`).EventEmitter {
 				//   -B = big
 				//   -X = swap
 				`-L`,
+				// Channel count
+				`-c`, this.options.channels.toString(),
 				// Sample rate
-				`-r`, this.options.sampleRate.toString(),
-				// Channels
-				`-c`, this.options.channels.toString()
+				`-r`, this.options.rate.toString(),
+				// File type
+				`-t`, this.options.type
 			],
 			options: {
 				encoding: `binary`
@@ -63,18 +77,15 @@ class AudioRecorder extends require(`events`).EventEmitter {
 				if (this.options.device) {
 					this.command.arguments.push(`-d`, this.options.device);
 				}
+				
+				// Add sample size and encoding type.
 				this.command.arguments.push(
-					// Sample encoding
-					`-e`, `signed-integer`,
-					// Precision in bits
-					`-b`, `16`,
-					// Audio type
-					`-t`, `wav`,
-					// Pipe
-					`-`
+					`-b`, this.options.bits.toString(),
+					`-e`, this.options.encoding
 				);
+				
+				// End on silence
 				if (this.options.silence > 0) {
-					// End on silence
 					this.command.arguments.push(
 						`silence`,`1`, `0.1`, (this.options.thresholdStart || this.options.threshold).toString().concat(`%`),
 						`1`, this.options.silence.toString(), (this.options.thresholdStop || this.options.threshold).toString().concat(`%`)
@@ -83,18 +94,18 @@ class AudioRecorder extends require(`events`).EventEmitter {
 				break;
 			case `arecord`:
 				this.command.arguments.push(
-					// Audio type
-					`-t`, `wav`,
 					// Sample format
-					`-f`, `S16_LE`,
-					// Pipe
-					`-`
+					`-f`, `S16_LE`
 				);
 				if (this.options.device) {
 					this.command.arguments.push(`-D`, this.options.device);
 				}
 				break;
 		}
+		this.command.arguments.push(
+			// Pipe
+			`-`
+		);
 		
 		if (this.logger) {
 			// Log command.
@@ -118,7 +129,7 @@ class AudioRecorder extends require(`events`).EventEmitter {
 		// Create new child process and give the recording commands.
 		childProcess = processSpawn(this.options.program, this.command.arguments, this.command.options);
 		
-		// Store this in 'self' so it can be accessed in the callback.
+		// Store this in `self` so it can be accessed in the callback.
 		let self = this;
 		childProcess.on(`close`, function(exitCode) {
 			if (self.logger) {

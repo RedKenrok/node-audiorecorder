@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.5 (2018-10-24)
+### Added
+- Added `bits`, `encoding`, `rate`, and `type` properties to options, which allows greater control over output.
+### Changed
+- `sampleRate` option renamed to `rate`, legacy support still available.
+
 ## 1.1.4 (2018-10-23)
 ### Added
 - Tests added with continues integration and code coverage.

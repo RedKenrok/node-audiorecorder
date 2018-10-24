@@ -11,24 +11,24 @@ test(`default`, function(t) {
 		`-V0`,
 		`-q`,
 		`-L`,
-		`-r`,
-		`16000`,
 		`-c`,
 		`1`,
-		`-e`,
-		`signed-integer`,
-		`-b`,
-		`16`,
+		`-r`,
+		`16000`,
 		`-t`,
 		`wav`,
-		`-`,
+		`-b`,
+		`16`,
+		`-e`,
+		`signed-integer`,
 		`silence`,
 		`1`,
 		`0.1`,
 		`0.5%`,
 		`1`,
 		`2`,
-		`0.5%`
+		`0.5%`,
+		`-`
 	]);
 	t.deepEqual(audioRecorder.command.options, {
 		encoding: `binary`
