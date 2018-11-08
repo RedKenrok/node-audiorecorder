@@ -81,7 +81,9 @@ class AudioRecorder extends require(`events`).EventEmitter {
 				// Add sample size and encoding type.
 				this.command.arguments.push(
 					`-b`, this.options.bits.toString(),
-					`-e`, this.options.encoding
+					`-e`, this.options.encoding,
+					// Pipe
+					`-`
 				);
 				
 				// End on silence
@@ -95,17 +97,15 @@ class AudioRecorder extends require(`events`).EventEmitter {
 			case `arecord`:
 				this.command.arguments.push(
 					// Sample format
-					`-f`, `S16_LE`
+					`-f`, `S16_LE`,
+					// Pipe
+					`-`
 				);
 				if (this.options.device) {
 					this.command.arguments.push(`-D`, this.options.device);
 				}
 				break;
 		}
-		this.command.arguments.push(
-			// Pipe
-			`-`
-		);
 		
 		if (this.logger) {
 			// Log command.
