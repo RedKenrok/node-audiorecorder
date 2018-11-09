@@ -1,44 +1,35 @@
 // Import node modules.
 const processSpawn = require(`child_process`).spawn;
 
-// Default recording values.
-const defaults = {
-	program: `rec`,			// Which program to use, either `arecord`, `rec`, and `sox`.
-	device: null,			// Recording device to use.
-	
-	channels: 1,			// Channel count.
-	bits: 16,				// Sample size. (only for `rec` and `sox`)
-	encoding: `signed-integer`,	// Encoding type. (only for `rec` and `sox`)
-	rate: 16000,			// Sample rate.
-	type: `wav`,			// File type.
-	
-	// Following options only for `rec` and `sox` programs
-	silence: 2,				// Time of silence in seconds before it stops recording.
-	threshold: 0.5,			// Silence threshold.
-	thresholdStart: null,	// Silence threshold to start recording, overrides threshold.
-	thresholdStop: null,	// Silence threshold to stop recording, overrides threshold.
-};
-
 // Local private variables.
 let childProcess;
 
 class AudioRecorder extends require(`events`).EventEmitter {
 	/**
 	 * Constructor of AudioRecord class.
-	 * @param {*} options Object with optional options variables
-	 * @param {*} logger Object with log, warn, and error functions
+	 * @param {Object} options Object with optional options variables
+	 * @param {Object} logger Object with log, warn, and error functions
 	 * @returns this
 	 */
 	constructor(options = {}, logger) {
 		super();
-		
-		// Legacy support for sample rate property.
-		if (options.sampleRate) {
-			options.rate = options.sampleRate;
-			options.sampleRate = undefined;
-		}
-		
-		this.options = Object.assign(defaults, options);
+				
+		// For the `rec` and `sox` only options the default is applied if a more general option is not specified.
+		this.options = Object.assign({
+			program: `rec`,				// Which program to use, either `arecord`, `rec`, and `sox`.
+			device: null,				// Recording device to use.
+			
+			bits: 16,					// Sample size. (only for `rec` and `sox`)
+			channels: 1,				// Channel count.
+			encoding: `signed-integer`,	// Encoding type. (only for `rec` and `sox`)
+			rate: 16000,				// Sample rate.
+			type: `wav`,				// Format type.
+			
+			// Following options only when program is `rec` or `sox`.
+			silence: 2,					// Duration of silence in seconds before it stops recording.
+			thresholdStart: 0.5,		// Silence threshold to start recording, overrides threshold.
+			thresholdStop: 0.5,			// Silence threshold to stop recording, overrides threshold.
+		}, options);
 		this.logger = logger;
 		
 		this.command = {
@@ -57,7 +48,7 @@ class AudioRecorder extends require(`events`).EventEmitter {
 				`-c`, this.options.channels.toString(),
 				// Sample rate
 				`-r`, this.options.rate.toString(),
-				// File type
+				// Format type
 				`-t`, this.options.type
 			],
 			options: {
@@ -67,49 +58,66 @@ class AudioRecorder extends require(`events`).EventEmitter {
 		switch (this.options.program) {
 			default:
 			case `sox`:
-				if (!this.options.device && process.platform === `win32`) {
+				// Select default recording device if none specified, otherwise no continues recording.
+				if (process.platform === `win32` && !this.options.device) {
 					this.command.arguments.unshift(
-						// Continues recording
 						`-d`,
 					);
 				}
 			case `rec`:
+				// Select recording device.
 				if (this.options.device) {
 					this.command.arguments.push(`-d`, this.options.device);
 				}
 				
 				// Add sample size and encoding type.
 				this.command.arguments.push(
+					// Bit rate
 					`-b`, this.options.bits.toString(),
+					// Encoding type
 					`-e`, this.options.encoding,
 					// Pipe
 					`-`
 				);
 				
-				// End on silence
-				if (this.options.silence > 0) {
+				if (this.options.silence) {
+					// Stop recording after duration has passed below threshold.
 					this.command.arguments.push(
-						`silence`,`1`, `0.1`, (this.options.thresholdStart || this.options.threshold).toString().concat(`%`),
-						`1`, this.options.silence.toString(), (this.options.thresholdStop || this.options.threshold).toString().concat(`%`)
+						// Effect
+						`silence`,
+						// Keep silence in results
+						`-l`,
+						// Enable above-periods
+						`1`,
+						// Duration
+						`0.1`,
+						// Starting threshold
+						this.options.thresholdStart.toFixed(1).concat(`%`),
+						// Enable below-periods
+						`1`,
+						// Duration
+						this.options.silence.toFixed(1),
+						// Stopping threshold
+						this.options.thresholdStop.toFixed(1).concat(`%`)
 					);
 				}
 				break;
 			case `arecord`:
+				if (this.options.device) {
+					this.command.arguments.unshift(`-D`, this.options.device);
+				}
 				this.command.arguments.push(
-					// Sample format
+					// Format type
 					`-f`, `S16_LE`,
 					// Pipe
 					`-`
 				);
-				if (this.options.device) {
-					this.command.arguments.push(`-D`, this.options.device);
-				}
 				break;
 		}
 		
 		if (this.logger) {
 			// Log command.
-			this.logger.log(`AudioRecorder command: ${this.options.program} ${this.command.arguments.join(` `)}`);
+			this.logger.log(`AudioRecorder: Command '${this.options.program} ${this.command.arguments.join(` `)}'`);
 		}
 		
 		return this;
@@ -133,7 +141,7 @@ class AudioRecorder extends require(`events`).EventEmitter {
 		let self = this;
 		childProcess.on(`close`, function(exitCode) {
 			if (self.logger) {
-				self.logger.log(`AudioRecorder: Exit code: '${exitCode}'.`);
+				self.logger.log(`AudioRecorder: Exit code '${exitCode}'.`);
 			}
 			self.emit(`close`, exitCode);
 		});
@@ -166,7 +174,8 @@ class AudioRecorder extends require(`events`).EventEmitter {
 		return this;
 	}
 	/**
-	 * Returns the stream of the audio recording process.
+	 * Get the audio stream of the recording process.
+	 * @returns The stream.
 	 */
 	stream() {
 		if (!childProcess) {

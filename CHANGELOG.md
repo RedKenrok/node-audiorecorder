@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.2.0 (2018-11-09)
+### Changed
+- Added `-l` to silence effect, therefore the silence not removed from the start of the recording.
+- Default values of `thresholdStart` and `thresholdStop` are both set to `1`.
+- Fixed duration of silence effect since duration parameters need to have a decimal. For example `2.0` instead of `2`.
+### Removed
+- `sampleRate` and `threshold` options removed.
+
+## 1.1.6 (2018-11-08)
+### Added
+- Example added to examples directory, and changed `example.js` to `examples/print-command.js`.
+### Fixed
+- Fixed silence effect.
+
 ## 1.1.5 (2018-10-24)
 ### Added
 - Added `bits`, `encoding`, `rate`, and `type` properties to options, which allows greater control over output.

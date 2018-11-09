@@ -23,11 +23,12 @@ test(`default`, function(t) {
 		`signed-integer`,
 		`-`,
 		`silence`,
+		`-l`,
 		`1`,
 		`0.1`,
 		`0.5%`,
 		`1`,
-		`2`,
+		`2.0`,
 		`0.5%`
 	]);
 	t.deepEqual(audioRecorder.command.options, {
