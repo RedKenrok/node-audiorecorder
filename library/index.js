@@ -13,7 +13,7 @@ class AudioRecorder extends require(`events`).EventEmitter {
 	 */
 	constructor(options = {}, logger) {
 		super();
-				
+		
 		// For the `rec` and `sox` only options the default is applied if a more general option is not specified.
 		this.options = Object.assign({
 			program: `rec`,				// Which program to use, either `arecord`, `rec`, and `sox`.
@@ -27,8 +27,8 @@ class AudioRecorder extends require(`events`).EventEmitter {
 			
 			// Following options only when program is `rec` or `sox`.
 			silence: 2,					// Duration of silence in seconds before it stops recording.
-			thresholdStart: 0.5,		// Silence threshold to start recording, overrides threshold.
-			thresholdStop: 0.5,			// Silence threshold to stop recording, overrides threshold.
+			thresholdStart: 0.5,		// Silence threshold to start recording.
+			thresholdStop: 0.5,			// Silence threshold to stop recording.
 		}, options);
 		this.logger = logger;
 		
