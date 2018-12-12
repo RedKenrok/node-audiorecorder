@@ -22,10 +22,11 @@ class AudioRecorder extends require(`events`).EventEmitter {
 			bits: 16,					// Sample size. (only for `rec` and `sox`)
 			channels: 1,				// Channel count.
 			encoding: `signed-integer`,	// Encoding type. (only for `rec` and `sox`)
+			format: `S16_LE`,			// Format type. (only for `arecord`)
 			rate: 16000,				// Sample rate.
-			type: `wav`,				// Format type.
+			type: `wav`,				// File type.
 			
-			// Following options only when program is `rec` or `sox`.
+			// Following options only available when using `rec` or `sox`.
 			silence: 2,					// Duration of silence in seconds before it stops recording.
 			thresholdStart: 0.5,		// Silence threshold to start recording.
 			thresholdStop: 0.5,			// Silence threshold to stop recording.
@@ -34,16 +35,8 @@ class AudioRecorder extends require(`events`).EventEmitter {
 		
 		this.command = {
 			arguments: [
-				// Show no error messages
-				//   Use the `close` event to listen for an exit code.
-				`-V0`,
 				// Show no progress
 				`-q`,
-				// Endian
-				//   -L = little
-				//   -B = big
-				//   -X = swap
-				`-L`,
 				// Channel count
 				`-c`, this.options.channels.toString(),
 				// Sample rate
@@ -72,6 +65,14 @@ class AudioRecorder extends require(`events`).EventEmitter {
 				
 				// Add sample size and encoding type.
 				this.command.arguments.push(
+					// Show no error messages
+					//   Use the `close` event to listen for an exit code.
+					`-V0`,
+					// Endian
+					//   -L = little
+					//   -B = big
+					//   -X = swap
+					`-L`,
 					// Bit rate
 					`-b`, this.options.bits.toString(),
 					// Encoding type
@@ -108,9 +109,7 @@ class AudioRecorder extends require(`events`).EventEmitter {
 				}
 				this.command.arguments.push(
 					// Format type
-					`-f`, `S16_LE`,
-					// Pipe
-					`-`
+					`-f`, `S16_LE`
 				);
 				break;
 		}

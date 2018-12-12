@@ -42,16 +42,17 @@ const AudioRecorder = require('node-audiorecorder');
 // Options is an optional parameter for the constructor call.
 // If an option is not given the default value, as seen below, will be used.
 const options = {
-  program: `rec`,     // Which program to use, either `arecord`, `rec`, and `sox`.
+  program: `rec`,     // Which program to use, either `arecord`, `rec`, or `sox`.
   device: null,       // Recording device to use.
   
   bits: 16,           // Sample size. (only for `rec` and `sox`)
   channels: 1,        // Channel count.
   encoding: `signed-integer`,  // Encoding type. (only for `rec` and `sox`)
+  format: `S16_LE`,   // Encoding type. (only for `arecord`)
   rate: 16000,        // Sample rate.
   type: `wav`,        // Format type.
   
-  // Following options only when program is `rec` or `sox`.
+  // Following options only available when using `rec` or `sox`.
   silence: 2,         // Duration of silence in seconds before it stops recording.
   thresholdStart: 0.5,  // Silence threshold to start recording.
   thresholdStop: 0.5,   // Silence threshold to stop recording.
@@ -65,6 +66,10 @@ let audioRecorder = new AudioRecorder(options, logger);
 ```
 
 > 'arecord' might not work on all operating systems. If you can't capture any sound with 'arecord', try to change device to 'arecord -l'.
+
+> See the [arecord documentation](https://linux.die.net/man/1/arecord) for more detail on its options.
+
+> See the [sox documentation](http://sox.sourceforge.net/Docs/Documentation) for more detail on the rec and sox options.
 
 ### Methods
 ```javascript

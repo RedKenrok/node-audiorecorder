@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0-beta.0 (2018-12-12)
+### Changed
+- Fixed arecord command generation.
+
 ## 1.2.0 (2018-11-09)
 ### Changed
 - Added `-l` to silence effect, therefore the silence not removed from the start of the recording.
