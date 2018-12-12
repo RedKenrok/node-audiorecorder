@@ -1,8 +1,10 @@
 # Changelog
 
 ## 1.3.0-beta.0 (2018-12-12)
+### Added
+- Opened up the `format` argument of the audio recorder options. (only for `arecord`)
 ### Changed
-- Fixed arecord command generation.
+- Fixed `arecord` command generation.
 
 ## 1.2.0 (2018-11-09)
 ### Changed
