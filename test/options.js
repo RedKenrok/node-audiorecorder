@@ -64,8 +64,7 @@ test(`sox`, function(t) {
 		program: `sox`
 	});
 	t.deepEqual(audioRecorder.options.program, `sox`);
-	t.deepEqual(audioRecorder.command.arguments, [
-		`-d`,
+	const expectedArguments = [
 		`-q`,
 		`-c`,
 		`1`,
@@ -88,7 +87,11 @@ test(`sox`, function(t) {
 		`1`,
 		`2.0`,
 		`0.5%`
-	]);
+	];
+	if (process.platform === `win32`) {
+		expectedArguments.unshift(`-d`);
+	}
+	t.deepEqual(audioRecorder.command.arguments, expectedArguments);
 	t.deepEqual(audioRecorder.command.options, {
 		encoding: `binary`
 	});
