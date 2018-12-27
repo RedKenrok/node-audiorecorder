@@ -30,6 +30,7 @@ class AudioRecorder extends require(`events`).EventEmitter {
 			silence: 2,					// Duration of silence in seconds before it stops recording.
 			thresholdStart: 0.5,		// Silence threshold to start recording.
 			thresholdStop: 0.5,			// Silence threshold to stop recording.
+			keepSilence: true			// Keep the silence in the recording.
 		}, options);
 		this.logger = logger;
 		
@@ -82,12 +83,21 @@ class AudioRecorder extends require(`events`).EventEmitter {
 				);
 				
 				if (this.options.silence) {
-					// Stop recording after duration has passed below threshold.
 					this.command.arguments.push(
 						// Effect
-						`silence`,
-						// Keep silence in results
-						`-l`,
+						`silence`
+					);
+					
+					// Keep the silence of the recording.
+					if (this.options.keepSilence) {
+						this.command.arguments.push(
+							// Keep silence in results
+							`-l`,
+						);
+					}
+					
+					// Stop recording after duration has passed below threshold.
+					this.command.arguments.push(
 						// Enable above-periods
 						`1`,
 						// Duration

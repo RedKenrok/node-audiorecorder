@@ -56,6 +56,7 @@ const options = {
   silence: 2,         // Duration of silence in seconds before it stops recording.
   thresholdStart: 0.5,  // Silence threshold to start recording.
   thresholdStop: 0.5,   // Silence threshold to stop recording.
+  keepSilence: true   // Keep the silence in the recording.
 };
 // Optional parameter intended for debugging.
 // The object has to implement a log and warn function.
