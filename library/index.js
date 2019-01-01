@@ -184,8 +184,21 @@ class AudioRecorder extends require(`events`).EventEmitter {
 			}
 			return null;
 		}
-		
-		return childProcess.stdout;
+
+		const self = this;
+		const stdout = childProcess.stdout;
+
+		//emits when the data comes to the process
+		stdout.on('data', function(data) {
+			self.emit('data', data);
+		});
+
+		//emits when the process ends
+		stdout.on('end', function() {
+			self.emit('end');
+		});
+
+		return stdout;
 	}
 }
 
