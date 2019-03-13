@@ -35,7 +35,7 @@ audioRecorder.stream().on(`error`, function() {
 	console.warn(`Recording error.`);
 });
 // Write incoming data out the console.
-/*audioRecorder.stream().on('data', function(chunk) {
+/*audioRecorder.stream().on(`data`, function(chunk) {
 	console.log(chunk);
 });*/
 

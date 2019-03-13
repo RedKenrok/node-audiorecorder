@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.1 (2019-03-13)
+### Changed
++ Updated dependencies.
+
 ## 1.4.0 (2018-12-27)
 ### Added
 + `keepSilence` option added fo `sox` and `rec` only. The option enables or disabled the `-l` flag which controls whether the silence is part of the recording or not.
