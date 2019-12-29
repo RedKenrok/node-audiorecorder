@@ -55,7 +55,7 @@ class AudioRecorder extends require(`events`).EventEmitter {
 				// Select default recording device if none specified, otherwise no continues recording.
 				if (process.platform === `win32` && !this.options.device) {
 					this.command.arguments.unshift(
-						`-d`,
+						`-d`
 					);
 				}
 			case `rec`:
@@ -92,7 +92,7 @@ class AudioRecorder extends require(`events`).EventEmitter {
 					if (this.options.keepSilence) {
 						this.command.arguments.push(
 							// Keep silence in results
-							`-l`,
+							`-l`
 						);
 					}
 					
