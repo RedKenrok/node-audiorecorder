@@ -75,11 +75,11 @@ let audioRecorder = new AudioRecorder(options, logger);
 ### Methods
 ```javascript
 // Creates and starts the recording process.
-audioRecorder.Start();
+audioRecorder.start();
 // Stops and removes the recording process.
-audioRecorder.Stop();
+audioRecorder.stop();
 // Returns the stream of the recording process.
-audioRecorder.Stream();
+audioRecorder.stream();
 ```
 
 ### Examples
