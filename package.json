@@ -4,8 +4,8 @@
     "url": "https://rondekker.nl"
   },
   "name": "node-audiorecorder",
-  "version": "1.4.2",
-  "description": "Record audio via node using a SOX or Arecord.",
+  "version": "2.0.0",
+  "description": "Record audio via node using SoX or Arecord.",
   "license": "MIT",
   "keywords": [
     "audio",
@@ -35,8 +35,8 @@
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "devDependencies": {
-    "ava": "^2.4.0",
-    "codecov": "^3.6.0",
+    "ava": "^3.3.0",
+    "codecov": "^3.6.5",
     "eslint": "^6.8.0",
     "nyc": "^15.0.0"
   }

@@ -1,7 +1,7 @@
 ---
 name: Suggest
 about: Suggest an idea. Help me improve and grow the project with your suggestions.
-labels: 
+labels:
 - enhancement
 ---
 

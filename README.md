@@ -1,11 +1,11 @@
 <div align="center">
-  
+
   [![npm package @latest](https://img.shields.io/npm/v/node-audiorecorder.svg?label=npm@latest&style=flat-square&maxAge=3600)](https://npmjs.com/package/node-audiorecorder)
   [![Travis-ci status](https://img.shields.io/travis-ci/com/RedKenrok/node-audiorecorder.svg?label=test%20status&branch=master&style=flat-square&maxAge=3600)](https://travis-ci.com/RedKenrok/node-audiorecorder)
-  
+
   [![License agreement](https://img.shields.io/github/license/redkenrok/node-audiorecorder.svg?style=flat-square&maxAge=86400)](https://github.com/redkenrok/node-audiorecorder/blob/master/LICENSE)
   [![Open issues on GitHub](https://img.shields.io/github/issues/redkenrok/node-audiorecorder.svg?style=flat-square&maxAge=86400)](https://github.com/redkenrok/node-audiorecorder/issues)
-  
+
 </div>
 
 # Audio recorder
@@ -43,15 +43,15 @@ const AudioRecorder = require('node-audiorecorder');
 // If an option is not given the default value, as seen below, will be used.
 const options = {
   program: `rec`,     // Which program to use, either `arecord`, `rec`, or `sox`.
-  device: null,       // Recording device to use.
-  
+  device: null,       // Recording device to use. (only for `arecord`)
+
   bits: 16,           // Sample size. (only for `rec` and `sox`)
   channels: 1,        // Channel count.
   encoding: `signed-integer`,  // Encoding type. (only for `rec` and `sox`)
   format: `S16_LE`,   // Encoding type. (only for `arecord`)
   rate: 16000,        // Sample rate.
   type: `wav`,        // Format type.
-  
+
   // Following options only available when using `rec` or `sox`.
   silence: 2,         // Duration of silence in seconds before it stops recording.
   thresholdStart: 0.5,  // Silence threshold to start recording.
@@ -66,7 +66,7 @@ const logger = console;
 let audioRecorder = new AudioRecorder(options, logger);
 ```
 
-> 'arecord' might not work on all operating systems. If you can't capture any sound with 'arecord', try to change device to 'arecord -l'.
+> If you can't capture any sound with 'arecord' try to running 'arecord -l' to which devices are available.
 
 > See the [arecord documentation](https://linux.die.net/man/1/arecord) for more detail on its options.
 
