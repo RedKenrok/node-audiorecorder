@@ -17,7 +17,6 @@ class AudioRecorder extends require('events').EventEmitter {
 		// For the `rec` and `sox` only options the default is applied if a more general option is not specified.
 		this.options = Object.assign({
 			program: 'rec',				// Which program to use, either `arecord`, `rec`, and `sox`.
-			device: null,				// Recording device to use.
 			
 			bits: 16,					// Sample size. (only for `rec` and `sox`)
 			channels: 1,				// Channel count.
@@ -53,17 +52,10 @@ class AudioRecorder extends require('events').EventEmitter {
 			default:
 			case 'sox':
 				// Select default recording device if none specified, otherwise no continues recording.
-				if (process.platform === 'win32' && !this.options.device) {
-					this.command.arguments.unshift(
-						'-d'
-					);
-				}
+				this.command.arguments.unshift(
+					'-d'
+				);
 			case 'rec':
-				// Select recording device.
-				if (this.options.device) {
-					this.command.arguments.push('-d', this.options.device);
-				}
-				
 				// Add sample size and encoding type.
 				this.command.arguments.push(
 					// Show no error messages
@@ -114,9 +106,7 @@ class AudioRecorder extends require('events').EventEmitter {
 				}
 				break;
 			case 'arecord':
-				if (this.options.device) {
-					this.command.arguments.unshift('-D', this.options.device);
-				}
+				this.command.arguments.unshift('-D');
 				this.command.arguments.push(
 					// Format type
 					'-f', 'S16_LE'
