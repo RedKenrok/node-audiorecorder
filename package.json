@@ -31,6 +31,7 @@
   "scripts": {
     "lint": "eslint library/**.js test/**.js examples/**.js --fix",
     "test": "nyc --reporter=text ava test/module.js test/options.js --verbose",
+    "test-all": "nyc --reporter=text ava test/module.js test/options.js test/extra.js --verbose",
     "posttest": "eslint library/**.js test/**.js examples/**.js",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
