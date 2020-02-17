@@ -11,23 +11,6 @@ test('core', function(t) {
   const audioRecorder = new AudioRecorder();
 
   t.is(typeof(audioRecorder.start), 'function');
-  try {
-    audioRecorder.start();
-  } catch(error) {
-    t.fail();
-  }
-
   t.is(typeof(audioRecorder.stream), 'function');
-  try {
-    audioRecorder.stream();
-  } catch(error) {
-    t.fail();
-  }
-
   t.is(typeof(audioRecorder.stop), 'function');
-  try {
-    audioRecorder.stop();
-  } catch(error) {
-    t.fail();
-  }
 });
