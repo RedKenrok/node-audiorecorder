@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.0.1 (2020-04-28)
+### Changed
+- Updated development dependecies.
+
 # 2.0.0 (2020-01-16)
 ### Removed
 - Device option removed for `sox` and `rec` commands.
