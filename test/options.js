@@ -23,9 +23,7 @@ test('arecord', function(t) {
     '-f',
     'S16_LE'
   ]);
-  t.deepEqual(audioRecorder.command.options, {
-    encoding: 'binary'
-  });
+  t.is(audioRecorder.command.options.encoding, 'binary');
 });
 
 // Default options (rec).
@@ -56,9 +54,8 @@ test('default', function(t) {
     '2.0',
     '0.5%'
   ]);
-  t.deepEqual(audioRecorder.command.options, {
-    encoding: 'binary'
-  });
+  t.is(audioRecorder.command.options.encoding, 'binary');
+  t.is(audioRecorder.command.options.env.AUDIODEV, audioRecorder.options.device);
 });
 
 // Default sox options.
@@ -93,9 +90,8 @@ test('sox', function(t) {
     '0.5%'
   ];
   t.deepEqual(audioRecorder.command.arguments, expectedArguments);
-  t.deepEqual(audioRecorder.command.options, {
-    encoding: 'binary'
-  });
+  t.is(audioRecorder.command.options.encoding, 'binary');
+  t.is(audioRecorder.command.options.env.AUDIODEV, audioRecorder.options.device);
 });
 
 // Default sox options.
@@ -129,7 +125,6 @@ test('rec', function(t) {
     '0.5%'
   ];
   t.deepEqual(audioRecorder.command.arguments, expectedArguments);
-  t.deepEqual(audioRecorder.command.options, {
-    encoding: 'binary'
-  });
+  t.is(audioRecorder.command.options.encoding, 'binary');
+  t.is(audioRecorder.command.options.env.AUDIODEV, audioRecorder.options.device);
 });
