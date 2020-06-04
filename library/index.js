@@ -46,7 +46,11 @@ class AudioRecorder extends require('events').EventEmitter {
         '-t', this.options.type
       ],
       options: {
-        encoding: 'binary'
+        encoding: 'binary',
+        env: {
+          ...process.env,
+          AUDIODEV: this.options.device,
+        }
       }
     };
     switch (this.options.program) {
