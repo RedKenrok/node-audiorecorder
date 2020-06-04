@@ -123,6 +123,9 @@ class AudioRecorder extends require('events').EventEmitter {
 
     if (this.logger) {
       // Log command.
+      if (this.command.options.env.AUDIODEV) {
+        this.logger.log(`AudioRecorder: Device ${this.command.options.env.AUDIODEV}`);
+      }
       this.logger.log(`AudioRecorder: Command '${this.options.program} ${this.command.arguments.join(' ')}'`);
     }
 
