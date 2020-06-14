@@ -129,7 +129,7 @@ class AudioRecorder extends require('events').EventEmitter {
 
     if (this.logger) {
       // Log command.
-      this.logger.log(`AudioRecorder: Command '${this.options.program} ${this.command.arguments.join(' ')}'; Options: AUDIODEV ${ this.command.options.env.AUDIODEV ? this.command.options.env.AUDIODEV : 'default' }, AUDIODRIVER: ${ this.command.options.env.AUDIODRIVER ? this.command.options.env.AUDIODRIVER : 'default' };`);
+      this.logger.log(`AudioRecorder: Command '${this.options.program} ${this.command.arguments.join(' ')}'; Options: AUDIODEV ${ this.command.options.env.AUDIODEV ? this.command.options.env.AUDIODEV : '(default)' }, AUDIODRIVER: ${ this.command.options.env.AUDIODRIVER ? this.command.options.env.AUDIODRIVER : '(default)' };`);
     }
 
     return this;
