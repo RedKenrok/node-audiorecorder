@@ -7,7 +7,7 @@ const DIRECTORY = 'examples-recordings';
 
 // Initialize recorder and file stream.
 const audioRecorder = new AudioRecorder({
-  program: process.platform === 'win32' ? 'sox' : 'rec',
+  program: 'sox',
   silence: 0
 }, console);
 
@@ -34,8 +34,8 @@ audioRecorder.stream().on('end', function() {
 audioRecorder.stream().on('error', function() {
   console.warn('Recording error.');
 });
-// Write incoming data out the console.
-/*audioRecorder.stream().on(`data`, function(chunk) {
+/*/ Write incoming data out the console.
+audioRecorder.stream().on('data', function(chunk) {
   console.log(chunk);
 });*/
 

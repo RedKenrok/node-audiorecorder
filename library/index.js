@@ -17,7 +17,8 @@ class AudioRecorder extends require('events').EventEmitter {
     // For the `rec` and `sox` only options the default is applied if a more general option is not specified.
     this.options = Object.assign({
       program: 'rec',             // Which program to use, either `arecord`, `rec`, and `sox`.
-      device: null,               // Recording device to use. (only for `arecord`)
+      device: null,               // Recording device to use.
+      driver: null,               // Recording driver to use.
 
       bits: 16,					          // Sample size. (only for `rec` and `sox`)
       channels: 1,				        // Channel count.
@@ -47,10 +48,7 @@ class AudioRecorder extends require('events').EventEmitter {
       ],
       options: {
         encoding: 'binary',
-        env: {
-          ...process.env,
-          AUDIODEV: this.options.device,
-        }
+        env: process.env
       }
     };
     switch (this.options.program) {
@@ -109,6 +107,14 @@ class AudioRecorder extends require('events').EventEmitter {
             this.options.thresholdStop.toFixed(1).concat('%')
           );
         }
+
+        // Setup environment variables.
+        if (this.options.device) {
+          this.command.options.env.AUDIODEV = this.options.device;
+        }
+        if (this.options.driver) {
+          this.command.options.env.AUDIODRIVER = this.options.driver;
+        }
         break;
       case 'arecord':
         if (this.options.device) {
@@ -123,10 +129,7 @@ class AudioRecorder extends require('events').EventEmitter {
 
     if (this.logger) {
       // Log command.
-      if (this.command.options.env.AUDIODEV) {
-        this.logger.log(`AudioRecorder: Device ${this.command.options.env.AUDIODEV}`);
-      }
-      this.logger.log(`AudioRecorder: Command '${this.options.program} ${this.command.arguments.join(' ')}'`);
+      this.logger.log(`AudioRecorder: Command '${this.options.program} ${this.command.arguments.join(' ')}'; Options: AUDIODEV ${ this.command.options.env.AUDIODEV ? this.command.options.env.AUDIODEV : 'default' }, AUDIODRIVER: ${ this.command.options.env.AUDIODRIVER ? this.command.options.env.AUDIODRIVER : 'default' };`);
     }
 
     return this;
