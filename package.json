@@ -4,7 +4,7 @@
     "url": "https://rondekker.nl"
   },
   "name": "node-audiorecorder",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Record audio via node using SoX or Arecord.",
   "license": "MIT",
   "keywords": [
