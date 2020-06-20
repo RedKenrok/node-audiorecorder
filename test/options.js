@@ -23,12 +23,10 @@ test('arecord', function(t) {
     '-f',
     'S16_LE'
   ]);
-  t.deepEqual(audioRecorder.command.options, {
-    encoding: 'binary'
-  });
+  t.is(audioRecorder.command.options.encoding, 'binary');
 });
 
-// Default options (rec).
+// Default options.
 test('default', function(t) {
   const audioRecorder = new AudioRecorder();
   t.deepEqual(audioRecorder.options.program, 'rec');
@@ -56,9 +54,7 @@ test('default', function(t) {
     '2.0',
     '0.5%'
   ]);
-  t.deepEqual(audioRecorder.command.options, {
-    encoding: 'binary'
-  });
+  t.is(audioRecorder.command.options.encoding, 'binary');
 });
 
 // Default sox options.
@@ -93,9 +89,7 @@ test('sox', function(t) {
     '0.5%'
   ];
   t.deepEqual(audioRecorder.command.arguments, expectedArguments);
-  t.deepEqual(audioRecorder.command.options, {
-    encoding: 'binary'
-  });
+  t.is(audioRecorder.command.options.encoding, 'binary');
 });
 
 // Default sox options.
@@ -129,7 +123,14 @@ test('rec', function(t) {
     '0.5%'
   ];
   t.deepEqual(audioRecorder.command.arguments, expectedArguments);
-  t.deepEqual(audioRecorder.command.options, {
-    encoding: 'binary'
+  t.is(audioRecorder.command.options.encoding, 'binary');
+});
+
+test('env', function(t) {
+  const audioRecorder = new AudioRecorder({
+    device: 'device name',
+    driver: 'driver name'
   });
+  t.is(audioRecorder.command.options.env.AUDIODEV, 'device name');
+  t.is(audioRecorder.command.options.env.AUDIODRIVER, 'driver name');
 });
