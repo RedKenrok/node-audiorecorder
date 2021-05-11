@@ -8,11 +8,12 @@ const DIRECTORY = 'examples-recordings';
 // Initialize recorder and file stream.
 const audioRecorder = new AudioRecorder({
   program: 'sox',
+  encoding: 'LINEAR16',
   silence: 0
 }, console);
 
 // Create path to write recordings to.
-if (!fs.existsSync(DIRECTORY)){
+if (!fs.existsSync(DIRECTORY)) {
   fs.mkdirSync(DIRECTORY);
 }
 // Create file path with random name.
@@ -25,13 +26,13 @@ const fileStream = fs.createWriteStream(fileName, { encoding: 'binary' });
 audioRecorder.start().stream().pipe(fileStream);
 
 // Log information on the following events
-audioRecorder.stream().on('close', function(code) {
+audioRecorder.stream().on('close', function (code) {
   console.warn('Recording closed. Exit code: ', code);
 });
-audioRecorder.stream().on('end', function() {
+audioRecorder.stream().on('end', function () {
   console.warn('Recording ended.');
 });
-audioRecorder.stream().on('error', function() {
+audioRecorder.stream().on('error', function () {
   console.warn('Recording error.');
 });
 /*/ Write incoming data out the console.
