@@ -33,7 +33,7 @@ class AudioRecorder extends require('events').EventEmitter {
 
     this._logger = logger;
 
-    this._childProcess = null
+    this._childProcess = null;
 
     this._command = {
       arguments: [

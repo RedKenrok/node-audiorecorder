@@ -4,89 +4,89 @@ const test = require('ava');
 const AudioRecorder = require('../library');
 
 // Core functions.
-test('core', function(t) {
-  t.is(typeof(AudioRecorder), 'function');
+test('core', function (t) {
+  t.is(typeof (AudioRecorder), 'function');
 
   // Instance.
   const audioRecorder = new AudioRecorder();
 
   try {
     audioRecorder.start();
-  } catch(error) {
+  } catch (error) {
     t.fail();
   }
 
   try {
     audioRecorder.stream();
-  } catch(error) {
+  } catch (error) {
     t.fail();
   }
 
   try {
     audioRecorder.stop();
-  } catch(error) {
+  } catch (error) {
     t.fail();
   }
 });
 
-test('debug-success', function(t) {
-  t.is(typeof(AudioRecorder), 'function');
+test('debug-success', function (t) {
+  t.is(typeof (AudioRecorder), 'function');
 
   // Instance.
   const audioRecorder = new AudioRecorder({}, console);
-  t.is(audioRecorder.logger, console);
+  t.is(audioRecorder._logger, console);
 
   try {
     audioRecorder.start();
-  } catch(error) {
+  } catch (error) {
     t.fail();
   }
 
   try {
     audioRecorder.stream();
-  } catch(error) {
+  } catch (error) {
     t.fail();
   }
 
   try {
     audioRecorder.stop();
-  } catch(error) {
+  } catch (error) {
     t.fail();
   }
 });
 
-test('debug-fallback', function(t) {
-  t.is(typeof(AudioRecorder), 'function');
+test('debug-fallback', function (t) {
+  t.is(typeof (AudioRecorder), 'function');
 
   // Instance.
   const audioRecorder = new AudioRecorder({}, console);
-  t.is(audioRecorder.logger, console);
+  t.is(audioRecorder._logger, console);
 
   try {
     audioRecorder.stream();
-  } catch(error) {
+  } catch (error) {
     t.fail();
   }
 
   try {
     audioRecorder.start();
-  } catch(error) {
+  } catch (error) {
     t.fail();
   }
   try {
     audioRecorder.start();
-  } catch(error) {
+  } catch (error) {
     t.fail();
   }
 
   try {
     audioRecorder.stop();
-  } catch(error) {
+  } catch (error) {
     t.fail();
   }
   try {
     audioRecorder.stop();
-  } catch(error) {
+  } catch (error) {
     t.fail();
   }
 });
