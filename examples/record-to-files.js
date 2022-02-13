@@ -11,13 +11,20 @@ if (!fs.existsSync(DIRECTORY)) {
   fs.mkdirSync(DIRECTORY);
 }
 
-let amount = 2;
-for (let i = 0; i < amount; i++) {
-  // Initialize recorder and file stream.
-  const audioRecorder = new AudioRecorder({
-    program: 'sox',
-    silence: 0
-  }, console);
+// Initialize recorders.
+let recorders = [
+  new AudioRecorder({
+    device: null, // Add device name.
+    silence: 0,
+  }, console),
+
+  new AudioRecorder({
+    device: null, // Add device name.
+    silence: 0,
+  }, console)
+]; // List available devices with 'sox -V6 -n -t coreaudio junk_device_name'
+for (let i = 0; i < recorders.length; i++) {
+  const recorder = recorders[i];
 
   // Create file path with random name.
   const fileName = path.join(
@@ -31,23 +38,17 @@ for (let i = 0; i < amount; i++) {
 
   // Create write stream.
   const fileStream = fs.createWriteStream(fileName, { encoding: 'binary' });
-  // Start and write to the file.
-  audioRecorder.start().stream().pipe(fileStream);
 
   // Log information on the following events.
-  audioRecorder.stream().on('error', function () {
+  recorder.on('error', function () {
     console.warn('Recording error.');
   });
-  audioRecorder.stream().on('close', function (exitCode) {
-    console.warn('Recording closed, exit code:', exitCode);
-  });
-  audioRecorder.stream().on('end', function () {
+  recorder.on('end', function () {
     console.warn('Recording ended.');
   });
-  /*/ Write incoming data out the console.
-  audioRecorder.stream().on('data', function (chunk) {
-    console.log(chunk);
-  });*/
+
+  // Start and write to the file.
+  recorder.start().stream().pipe(fileStream);
 }
 
 // Keep process alive.

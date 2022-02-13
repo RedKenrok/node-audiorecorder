@@ -6,7 +6,7 @@ class AudioRecorder extends require('events').EventEmitter {
    * Constructor of AudioRecord class.
    * @param {Object} options Object with optional options variables
    * @param {Object} logger Object with log, warn, and error functions
-   * @returns this
+   * @returns {AudioRecorder} this
    */
   constructor(options = {}, logger) {
     super();
@@ -48,14 +48,13 @@ class AudioRecorder extends require('events').EventEmitter {
       ],
       options: {
         encoding: 'binary',
-        env: process.env
+        env: Object.assign({}, process.env)
       }
     };
 
     switch (this._options.program) {
       default:
       case 'sox':
-        // Select default recording device if none specified, otherwise no continues recording.
         this._command.arguments.unshift(
           '-d'
         );
@@ -138,7 +137,7 @@ class AudioRecorder extends require('events').EventEmitter {
   }
   /**
    * Creates and starts the audio recording process.
-   * @returns this
+   * @returns {AudioRecorder} this
    */
   start () {
     if (this._childProcess) {
@@ -159,6 +158,12 @@ class AudioRecorder extends require('events').EventEmitter {
       }
       self.emit('close', exitCode);
     });
+    this._childProcess.on('error', function (error) {
+      self.emit('error', error);
+    });
+    this._childProcess.on('end', function () {
+      self.emit('end');
+    });
 
     if (this._logger) {
       this._logger.log('AudioRecorder: Started recording.');
@@ -168,7 +173,7 @@ class AudioRecorder extends require('events').EventEmitter {
   }
   /**
    * Stops and removes the audio recording process.
-   * @returns this
+   * @returns {AudioRecorder} this
    */
   stop () {
     if (!this._childProcess) {
@@ -189,7 +194,7 @@ class AudioRecorder extends require('events').EventEmitter {
   }
   /**
    * Get the audio stream of the recording process.
-   * @returns The stream.
+   * @returns {Readable} The stream.
    */
   stream () {
     if (!this._childProcess) {
