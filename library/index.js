@@ -1,21 +1,18 @@
 // Import node modules.
 const processSpawn = require('child_process').spawn;
 
-// Local private variables.
-let childProcess;
-
 class AudioRecorder extends require('events').EventEmitter {
   /**
    * Constructor of AudioRecord class.
    * @param {Object} options Object with optional options variables
    * @param {Object} logger Object with log, warn, and error functions
-   * @returns this
+   * @returns {AudioRecorder} this
    */
   constructor(options = {}, logger) {
     super();
 
     // For the `rec` and `sox` only options the default is applied if a more general option is not specified.
-    this.options = Object.assign({
+    this._options = Object.assign({
       program: 'rec',             // Which program to use, either `arecord`, `rec`, and `sox`.
       device: null,               // Recording device to use.
       driver: null,               // Recording driver to use.
@@ -33,34 +30,37 @@ class AudioRecorder extends require('events').EventEmitter {
       thresholdStop: 0.5,         // Silence threshold to stop recording.
       keepSilence: true           // Keep the silence in the recording.
     }, options);
-    this.logger = logger;
 
-    this.command = {
+    this._logger = logger;
+
+    this._childProcess = null;
+
+    this._command = {
       arguments: [
         // Show no progress
         '-q',
         // Channel count
-        '-c', this.options.channels.toString(),
+        '-c', this._options.channels.toString(),
         // Sample rate
-        '-r', this.options.rate.toString(),
+        '-r', this._options.rate.toString(),
         // Format type
-        '-t', this.options.type
+        '-t', this._options.type
       ],
       options: {
         encoding: 'binary',
-        env: process.env
+        env: Object.assign({}, process.env)
       }
     };
-    switch (this.options.program) {
+
+    switch (this._options.program) {
       default:
       case 'sox':
-        // Select default recording device if none specified, otherwise no continues recording.
-        this.command.arguments.unshift(
+        this._command.arguments.unshift(
           '-d'
         );
       case 'rec':
         // Add sample size and encoding type.
-        this.command.arguments.push(
+        this._command.arguments.push(
           // Show no error messages
           //   Use the `close` event to listen for an exit code.
           '-V0',
@@ -70,134 +70,141 @@ class AudioRecorder extends require('events').EventEmitter {
           //   -X = swap
           '-L',
           // Bit rate
-          '-b', this.options.bits.toString(),
+          '-b', this._options.bits.toString(),
           // Encoding type
-          '-e', this.options.encoding,
+          '-e', this._options.encoding,
           // Pipe
           '-'
         );
 
-        if (this.options.silence) {
-          this.command.arguments.push(
+        if (this._options.silence) {
+          this._command.arguments.push(
             // Effect
             'silence'
           );
 
           // Keep the silence of the recording.
-          if (this.options.keepSilence) {
-            this.command.arguments.push(
+          if (this._options.keepSilence) {
+            this._command.arguments.push(
               // Keep silence in results
               '-l'
             );
           }
 
           // Stop recording after duration has passed below threshold.
-          this.command.arguments.push(
+          this._command.arguments.push(
             // Enable above-periods
             '1',
             // Duration
             '0.1',
             // Starting threshold
-            this.options.thresholdStart.toFixed(1).concat('%'),
+            this._options.thresholdStart.toFixed(1).concat('%'),
             // Enable below-periods
             '1',
             // Duration
-            this.options.silence.toFixed(1),
+            this._options.silence.toFixed(1),
             // Stopping threshold
-            this.options.thresholdStop.toFixed(1).concat('%')
+            this._options.thresholdStop.toFixed(1).concat('%')
           );
         }
 
         // Setup environment variables.
-        if (this.options.device) {
-          this.command.options.env.AUDIODEV = this.options.device;
+        if (this._options.device) {
+          this._command.options.env.AUDIODEV = this._options.device;
         }
-        if (this.options.driver) {
-          this.command.options.env.AUDIODRIVER = this.options.driver;
+        if (this._options.driver) {
+          this._command.options.env.AUDIODRIVER = this._options.driver;
         }
         break;
+
       case 'arecord':
-        if (this.options.device) {
-          this.command.arguments.unshift('-D', this.options.device);
+        if (this._options.device) {
+          this._command.arguments.unshift('-D', this._options.device);
         }
-        this.command.arguments.push(
+        this._command.arguments.push(
           // Format type
           '-f', 'S16_LE'
         );
         break;
     }
 
-    if (this.logger) {
+    if (this._logger) {
       // Log command.
-      this.logger.log(`AudioRecorder: Command '${this.options.program} ${this.command.arguments.join(' ')}'; Options: AUDIODEV ${ this.command.options.env.AUDIODEV ? this.command.options.env.AUDIODEV : '(default)' }, AUDIODRIVER: ${ this.command.options.env.AUDIODRIVER ? this.command.options.env.AUDIODRIVER : '(default)' };`);
+      this._logger.log(`AudioRecorder: Command '${this._options.program} ${this._command.arguments.join(' ')}'; Options: AUDIODEV ${this._command.options.env.AUDIODEV ? this._command.options.env.AUDIODEV : '(default)'}, AUDIODRIVER: ${this._command.options.env.AUDIODRIVER ? this._command.options.env.AUDIODRIVER : '(default)'};`);
     }
 
     return this;
   }
   /**
    * Creates and starts the audio recording process.
-   * @returns this
+   * @returns {AudioRecorder} this
    */
-  start() {
-    if (childProcess) {
-      if (this.logger) {
-        this.logger.warn('AudioRecorder: Process already active, killed old one started new process.');
+  start () {
+    if (this._childProcess) {
+      if (this._logger) {
+        this._logger.warn('AudioRecorder: Process already active, killed old one started new process.');
       }
-      childProcess.kill();
+      this._childProcess.kill();
     }
 
     // Create new child process and give the recording commands.
-    childProcess = processSpawn(this.options.program, this.command.arguments, this.command.options);
+    this._childProcess = processSpawn(this._options.program, this._command.arguments, this._command.options);
 
     // Store this in `self` so it can be accessed in the callback.
     let self = this;
-    childProcess.on('close', function(exitCode) {
-      if (self.logger) {
-        self.logger.log(`AudioRecorder: Exit code '${exitCode}'.`);
+    this._childProcess.on('close', function (exitCode) {
+      if (self._logger) {
+        self._logger.log(`AudioRecorder: Exit code '${exitCode}'.`);
       }
       self.emit('close', exitCode);
     });
+    this._childProcess.on('error', function (error) {
+      self.emit('error', error);
+    });
+    this._childProcess.on('end', function () {
+      self.emit('end');
+    });
 
-    if (this.logger) {
-      this.logger.log('AudioRecorder: Started recording.');
+    if (this._logger) {
+      this._logger.log('AudioRecorder: Started recording.');
     }
 
     return this;
   }
   /**
    * Stops and removes the audio recording process.
-   * @returns this
+   * @returns {AudioRecorder} this
    */
-  stop() {
-    if (!childProcess) {
-      if (this.logger) {
-        this.logger.warn('AudioRecorder: Unable to stop recording, no process active.');
+  stop () {
+    if (!this._childProcess) {
+      if (this._logger) {
+        this._logger.warn('AudioRecorder: Unable to stop recording, no process active.');
       }
       return this;
     }
 
-    childProcess.kill();
-    childProcess = null;
+    this._childProcess.kill();
+    this._childProcess = null;
 
-    if (this.logger) {
-      this.logger.log('AudioRecorder: Stopped recording.');
+    if (this._logger) {
+      this._logger.log('AudioRecorder: Stopped recording.');
     }
 
     return this;
   }
   /**
    * Get the audio stream of the recording process.
-   * @returns The stream.
+   * @returns {Readable} The stream.
    */
-  stream() {
-    if (!childProcess) {
-      if (this.logger) {
-        this.logger.warn('AudioRecorder: Unable to retrieve stream, because no process not active. Call the start or resume function first.');
+  stream () {
+    if (!this._childProcess) {
+      if (this._logger) {
+        this._logger.warn('AudioRecorder: Unable to retrieve stream, because no process not active. Call the start or resume function first.');
       }
       return null;
     }
 
-    return childProcess.stdout;
+    return this._childProcess.stdout;
   }
 }
 
