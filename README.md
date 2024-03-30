@@ -6,7 +6,7 @@
 
 </div>
 
-# Audio recorder
+# Audio recorder (unmaintained)
 
 Audio recorder for [Node.js](https://nodejs.org/), delivers a 16-bit signed-integer linear pulse modulation WAV stream. Based of [Gilles De Mey](https://github.com/gillesdemey)'s [node-record-lpcm16](https://github.com/gillesdemey/node-record-lpcm16).
 
