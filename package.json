@@ -35,8 +35,9 @@
     "posttest": "eslint library/**.js test/**.js examples/**.js"
   },
   "devDependencies": {
-    "ava": "^4.0.1",
-    "eslint": "^8.9.0",
-    "nyc": "^15.1.0"
+    "ava": "^4.3.3",
+    "eslint": "^8.57.0",
+    "nyc": "^15.1.0",
+    "through": "^2.3.8"
   }
 }

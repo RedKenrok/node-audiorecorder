@@ -56,7 +56,7 @@ class AudioRecorder extends require('events').EventEmitter {
       default:
       case 'sox':
         this._command.arguments.unshift(
-          '-d'
+          '-d',
         );
       case 'rec':
         // Add sample size and encoding type.
@@ -130,7 +130,7 @@ class AudioRecorder extends require('events').EventEmitter {
 
     if (this._logger) {
       // Log command.
-      this._logger.log(`AudioRecorder: Command '${this._options.program} ${this._command.arguments.join(' ')}'; Options: AUDIODEV ${this._command.options.env.AUDIODEV ? this._command.options.env.AUDIODEV : '(default)'}, AUDIODRIVER: ${this._command.options.env.AUDIODRIVER ? this._command.options.env.AUDIODRIVER : '(default)'};`);
+      this._logger.log(`AudioRecorder: Command '${this._options.program} ${this._command.arguments.join(' ')}'; Options: AUDIODEV: ${this._command.options.env.AUDIODEV ? this._command.options.env.AUDIODEV : '(default)'}, AUDIODRIVER: ${this._command.options.env.AUDIODRIVER ? this._command.options.env.AUDIODRIVER : '(default)'};`);
     }
 
     return this;

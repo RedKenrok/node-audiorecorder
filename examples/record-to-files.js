@@ -22,7 +22,7 @@ let recorders = [
     device: null, // Add device name.
     silence: 0,
   }, console)
-]; // List available devices with 'sox -V6 -n -t coreaudio junk_device_name'
+];
 for (let i = 0; i < recorders.length; i++) {
   const recorder = recorders[i];
 
@@ -48,9 +48,20 @@ for (let i = 0; i < recorders.length; i++) {
   });
 
   // Start and write to the file.
-  recorder.start().stream().pipe(fileStream);
+  recorder
+    .start()
+    .stream()
+    .pipe(fileStream);
 }
+
+// Stop after 5 seconds.
+setTimeout(() => {
+  for (let i = 0; i < recorders.length; i++) {
+    recorders[i].stop();
+  }
+  process.stdin.pause();
+}, 5000);
 
 // Keep process alive.
 process.stdin.resume();
-console.warn('Press ctrl+c to exit.');
+console.warn('Press ctrl+c to exit or wait 5 seconds.');

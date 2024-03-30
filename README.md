@@ -48,7 +48,9 @@ const AudioRecorder = require('node-audiorecorder')
 // If an option is not given the default value, as seen below, will be used.
 const options = {
   program: `rec`, // Which program to use, either `arecord`, `rec`, or `sox`.
-  device: null, // Recording device to use, e.g. `hw:1,0`
+  device: null, // Recording device to use. Null means default.
+  // List available devices with 'arecord -l', 'rec -V6 -n -t coreaudio junk_device_name', or 'sox -V6 -n -t coreaudio junk_device_name'.
+  driver: null, // Recording driver to use. Null means default.
 
   bits: 16, // Sample size. (only for `rec` and `sox`)
   channels: 1, // Channel count.
